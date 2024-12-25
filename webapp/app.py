@@ -47,3 +47,11 @@ async def health():
 @app.get("/ready")
 async def readiness():
     return {"status": "ready"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    # Get the port from an environment variable, default to 8080
+    port = int(os.getenv("PORT", 8080))
+    uvicorn.run(app, host="0.0.0.0", port=port)
