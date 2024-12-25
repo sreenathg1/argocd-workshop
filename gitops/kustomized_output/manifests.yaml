@@ -1,4 +1,4 @@
-# git commit: 62cb4329dc396b434081f7a20eb5ce56f06fe003
+# git commit: 4e3b183f10bd7aed8b50ab34323af135d10ea4c9
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -24,7 +24,7 @@ type: Opaque
 apiVersion: v1
 kind: Service
 metadata:
-  name: app-webapp-service
+  name: fastapi-webapp-service
   namespace: dev
 spec:
   ports:
@@ -33,38 +33,38 @@ spec:
     protocol: TCP
     targetPort: 8080
   selector:
-    app: app-webapp
+    app: fastapi-webapp
   type: LoadBalancer
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: app-webapp
-  name: app-webapp-deployment
+    app: fastapi-webapp
+  name: fastapi-webapp-deployment
   namespace: dev
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: app-webapp
+      app: fastapi-webapp
   template:
     metadata:
       labels:
-        app: app-webapp
+        app: fastapi-webapp
     spec:
       containers:
       - envFrom:
         - configMapRef:
             name: app-envs-td2thftdb5
-        image: falrayes/app-argocd-workshop:62cb4329dc396b434081f7a20eb5ce56f06fe003
+        image: falrayes/app-argocd-workshop:4e3b183f10bd7aed8b50ab34323af135d10ea4c9
         livenessProbe:
           httpGet:
             path: /health
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 10
-        name: app-webapp-container
+        name: fastapi-webapp-container
         ports:
         - containerPort: 8080
         readinessProbe:
