@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-webapp-deployment
+  name: fastapi-webapp-deployment
   labels:
-    app: app-webapp
+    app: fastapi-webapp
 spec:
   selector:
     matchLabels:
-      app: app-webapp
+      app: fastapi-webapp
   template:
     metadata:
       labels:
-        app: app-webapp
+        app: fastapi-webapp
     spec:
       containers:
-        - name: app-webapp-container
+        - name: fastapi-webapp-container
           image: falrayes/app-argocd-workshop:image-tag
           envFrom:
             - configMapRef:
@@ -62,7 +62,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: app-webapp-service
+  name: fastapi-webapp-service
 spec:
   type: LoadBalancer
   ports:
@@ -71,4 +71,4 @@ spec:
       port: 8080
       targetPort: 8080
   selector:
-    app: app-webapp
+    app: fastapi-webapp
