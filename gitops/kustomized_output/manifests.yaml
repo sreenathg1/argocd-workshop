@@ -1,4 +1,4 @@
-# git commit: 525d5d9e690be3e7fbbfa056cc7de16890db2229
+# git commit: 62cb4329dc396b434081f7a20eb5ce56f06fe003
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -24,7 +24,7 @@ type: Opaque
 apiVersion: v1
 kind: Service
 metadata:
-  name: go-webapp-service
+  name: app-webapp-service
   namespace: dev
 spec:
   ports:
@@ -33,38 +33,38 @@ spec:
     protocol: TCP
     targetPort: 8080
   selector:
-    app: go-webapp
+    app: app-webapp
   type: LoadBalancer
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: go-webapp
-  name: go-webapp-deployment
+    app: app-webapp
+  name: app-webapp-deployment
   namespace: dev
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: go-webapp
+      app: app-webapp
   template:
     metadata:
       labels:
-        app: go-webapp
+        app: app-webapp
     spec:
       containers:
       - envFrom:
         - configMapRef:
             name: app-envs-td2thftdb5
-        image: falrayes/go-argocd-workshop:525d5d9e690be3e7fbbfa056cc7de16890db2229
+        image: falrayes/app-argocd-workshop:62cb4329dc396b434081f7a20eb5ce56f06fe003
         livenessProbe:
           httpGet:
             path: /health
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 10
-        name: go-webapp-container
+        name: app-webapp-container
         ports:
         - containerPort: 8080
         readinessProbe:

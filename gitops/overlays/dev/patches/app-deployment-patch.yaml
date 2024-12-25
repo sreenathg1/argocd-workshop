@@ -10,4 +10,4 @@ spec:
     spec:
       containers:
         - name: app-webapp-container
-          image: falrayes/app-argocd-workshop:e8e542cae219d9c8f210f4a195a9472ff4b19bbf
+          image: falrayes/app-argocd-workshop:62cb4329dc396b434081f7a20eb5ce56f06fe003
