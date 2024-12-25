@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: go-webapp-deployment
+  labels:
+    app: go-webapp
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+        - name: go-webapp-container
+          image: falrayes/go-argocd-workshop:v1

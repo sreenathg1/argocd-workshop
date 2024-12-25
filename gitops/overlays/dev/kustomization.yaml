@@ -1,0 +1,18 @@
+resources:
+  - ../../base
+  - namespace.yaml
+
+namespace: dev
+
+patches:
+  - path: patches/go-deployment-patch.yaml
+
+configMapGenerator:
+  - name: app-envs
+    envs:
+      - envs/go.env.example
+
+secretGenerator:
+  - name: app-secrets
+    files:
+      - secrets/api_key.secret.example
