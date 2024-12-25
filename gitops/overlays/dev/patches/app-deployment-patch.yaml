@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-webapp-deployment
+  labels:
+    app: app-webapp
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+        - name: app-webapp-container
+          image: falrayes/app-argocd-workshop:e8e542cae219d9c8f210f4a195a9472ff4b19bbf

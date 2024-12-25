@@ -1,2 +1,2 @@
 resources:
-  - go-deployment.yaml
+  - app-deployment.yaml

@@ -5,12 +5,12 @@ resources:
 namespace: prod
 
 patches:
-  - patch: patches/go-deployment-patch.yaml
+  - patch: patches/app-deployment-patch.yaml
 
 configMapGenerator:
   - name: app-envs
     envs:
-      - envs/go.env.example
+      - envs/app.env.example
 
 secretGenerator:
   - name: app-secrets

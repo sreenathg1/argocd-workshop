@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: go-webapp-deployment
+  name: app-webapp-deployment
   labels:
-    app: go-webapp
+    app: app-webapp
 spec:
   selector:
     matchLabels:
-      app: go-webapp
+      app: app-webapp
   template:
     metadata:
       labels:
-        app: go-webapp
+        app: app-webapp
     spec:
       containers:
-        - name: go-webapp-container
-          image: falrayes/go-argocd-workshop:image-tag
+        - name: app-webapp-container
+          image: falrayes/app-argocd-workshop:image-tag
           envFrom:
             - configMapRef:
                 name: app-envs
@@ -62,7 +62,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: go-webapp-service
+  name: app-webapp-service
 spec:
   type: LoadBalancer
   ports:
@@ -71,4 +71,4 @@ spec:
       port: 8080
       targetPort: 8080
   selector:
-    app: go-webapp
+    app: app-webapp

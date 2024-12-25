@@ -18,10 +18,11 @@
     <section class="container">
         <li class="news-article">
           <div>
-            <h3 class="title">Cluster: {{.Cluster }}</h3>
-            <p class="description">Image: {{ .Image }}</p>
+            <h3 class="title">Cluster: {{ cluster }}</h3>
+            <p class="description">Image: {{ image }}</p>
+            <p class="description">API Key: {{ api_key }}</p>
           </div>
-          <img class="article-image" src="{{ .ClusterImage }}" />
+          <img class="article-image" src="{{ cluster_image }}" />
         </li>
     </section>
   </main>
