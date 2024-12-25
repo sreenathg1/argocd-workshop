@@ -34,6 +34,7 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v4
         with:
+          platforms: linux/amd64,linux/arm64
           context: ./webapp
           file: webapp/Dockerfile
           push: true
@@ -66,11 +67,6 @@ jobs:
         run: |
           echo "PORT=${{ secrets.PORT }}" > gitops/overlays/dev/envs/go.env
           echo "API_KEY=${{ secrets.API_KEY }}" > gitops/overlays/dev/secrets/api_key.secret
-
-      # - name: Test kustomize setup
-      #   run: |
-      #     curl https://get.datree.io | /bin/bash
-      #     datree kustomize test gitops/overlays/dev/ --no-record
       
       # This step is very important for the CD part of the pipeline.
       # The generated manifests in the step(Generate and update manifests) are for any user to take a quick look on the manifests built by Kustomize and are being applied.

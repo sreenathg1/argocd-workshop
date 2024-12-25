@@ -1,0 +1,100 @@
+# git commit: 737b50372482375f502c5f49ff150f04a42385ac
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+---
+apiVersion: v1
+data:
+  PORT: "8080"
+kind: ConfigMap
+metadata:
+  name: app-envs-td2thftdb5
+  namespace: dev
+---
+apiVersion: v1
+data:
+  api_key.secret.example: REVWX0FQSV9LRVkK
+kind: Secret
+metadata:
+  name: app-secrets-268cfkkh6t
+  namespace: dev
+type: Opaque
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: go-webapp-service
+  namespace: dev
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: go-webapp
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: go-webapp
+  name: go-webapp-deployment
+  namespace: dev
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: go-webapp
+  template:
+    metadata:
+      labels:
+        app: go-webapp
+    spec:
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: go-envs
+        image: falrayes/go-argocd-workshop:737b50372482375f502c5f49ff150f04a42385ac
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        name: go-webapp-container
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          limits:
+            cpu: "1"
+            memory: 512Mi
+          requests:
+            cpu: "0.2"
+            memory: 256Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - NET_RAW
+          readOnlyRootFilesystem: true
+          runAsUser: 10001
+        volumeMounts:
+        - mountPath: /secrets
+          name: api-key
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+      - name: api-key
+        secret:
+          secretName: app-secrets-268cfkkh6t

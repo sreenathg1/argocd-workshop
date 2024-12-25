@@ -10,4 +10,4 @@ spec:
     spec:
       containers:
         - name: go-webapp-container
-          image: falrayes/go-argocd-workshop:v1
+          image: falrayes/go-argocd-workshop:737b50372482375f502c5f49ff150f04a42385ac
