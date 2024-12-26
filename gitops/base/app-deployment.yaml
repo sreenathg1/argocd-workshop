@@ -64,7 +64,6 @@ kind: Service
 metadata:
   name: fastapi-webapp-service
 spec:
-  type: LoadBalancer
   ports:
     - name: http
       protocol: TCP
