@@ -66,11 +66,6 @@ jobs:
           curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
           sudo mv kustomize /usr/local/bin
 
-      - name: Set up the go.env and go.secret files
-        run: |
-          echo "PORT=${{ secrets.PORT }}" > gitops/overlays/dev/envs/go.env
-          echo "API_KEY=${{ secrets.API_KEY }}" > gitops/overlays/dev/secrets/api_key.secret
-      
       # This step is very important for the CD part of the pipeline.
       # The generated manifests in the step(Generate and update manifests) are for any user to take a quick look on the manifests built by Kustomize and are being applied.
       # However ArgoCD is pointing towards the particular overlay with a kustomize.yaml file to generate and apply the manifests immediately.

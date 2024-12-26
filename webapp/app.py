@@ -23,10 +23,8 @@ IMAGE = os.getenv("IMAGE", "Image not set")
 async def index():
     try:
         # Read API key from file
-        # with open("/secrets/api_key.secret", mode="r", encoding="utf-8") as file:
-        #     api_key = file.read().strip()
-
-        api_key = "hello"
+        with open("/secrets/api_key.secret.example", mode="r", encoding="utf-8") as file:
+            api_key = file.read().strip()
 
         # Render template
         template = templates.get_template("index.html")
