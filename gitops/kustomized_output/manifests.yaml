@@ -1,4 +1,4 @@
-# git commit: b173f417028a098211273d8acdb1b37886be43f6
+# git commit: 096abf8b5bf93dee460dd2e5b47f0ac89eddac7c
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -7,12 +7,12 @@ metadata:
 apiVersion: v1
 data:
   CLUSTER: dev-cluster
-  CLUSTER_IMAGE: prod
+  CLUSTER_IMAGE: dev
   IMAGE: Dev image
   PORT: "8080"
 kind: ConfigMap
 metadata:
-  name: app-envs-2tk2g9dk7f
+  name: app-envs-kbfhgg8dhd
   namespace: dev
 ---
 apiVersion: v1
@@ -58,8 +58,8 @@ spec:
       containers:
       - envFrom:
         - configMapRef:
-            name: app-envs-2tk2g9dk7f
-        image: falrayes/app-argocd-workshop:b173f417028a098211273d8acdb1b37886be43f6
+            name: app-envs-kbfhgg8dhd
+        image: falrayes/app-argocd-workshop:096abf8b5bf93dee460dd2e5b47f0ac89eddac7c
         livenessProbe:
           httpGet:
             path: /health
