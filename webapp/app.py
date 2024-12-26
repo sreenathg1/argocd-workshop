@@ -17,6 +17,7 @@ templates = Environment(loader=FileSystemLoader("templates"))
 # Environment variables
 CLUSTER = os.getenv("CLUSTER", "Cluster not set")
 IMAGE = os.getenv("IMAGE", "Image not set")
+CLUSTER_IMAGE_PATH = os.getenv("CLUSTER_IMAGE", "")
 
 # Routes
 @app.get("/", response_class=HTMLResponse)
@@ -31,7 +32,7 @@ async def index():
         rendered = template.render(
             cluster=CLUSTER,
             image=IMAGE,
-            cluster_image="/assets/sample-image.png",
+            cluster_image=f"/assets/images/{CLUSTER_IMAGE_PATH}.png",
             api_key=api_key
         )
         return HTMLResponse(content=rendered)
