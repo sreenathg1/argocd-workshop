@@ -1,4 +1,4 @@
-# git commit: 096abf8b5bf93dee460dd2e5b47f0ac89eddac7c
+# git commit: 8c5c02cb7630e17d152847bc24e659695dcbfebc
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -59,7 +59,7 @@ spec:
       - envFrom:
         - configMapRef:
             name: app-envs-kbfhgg8dhd
-        image: falrayes/app-argocd-workshop:096abf8b5bf93dee460dd2e5b47f0ac89eddac7c
+        image: falrayes/app-argocd-workshop:8c5c02cb7630e17d152847bc24e659695dcbfebc
         livenessProbe:
           httpGet:
             path: /health
