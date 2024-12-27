@@ -5,7 +5,7 @@ resources:
 namespace: prod
 
 patches:
-  - patch: patches/app-deployment-patch.yaml
+  - path: patches/app-deployment-patch.yaml
 
 configMapGenerator:
   - name: app-envs
