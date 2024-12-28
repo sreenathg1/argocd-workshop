@@ -1,0 +1,129 @@
+# git commit: 39f6560c1a249e60b723fbf0d2f22517562b8f88
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+---
+apiVersion: v1
+data:
+  CLUSTER: dev-cluster
+  CLUSTER_IMAGE: dev
+  IMAGE: Dev image
+  PORT: "8080"
+kind: ConfigMap
+metadata:
+  name: app-envs-kbfhgg8dhd
+  namespace: dev
+---
+apiVersion: v1
+data:
+  api_key.secret.example: REVWX0FQSV9LRVkK
+kind: Secret
+metadata:
+  name: app-secrets-268cfkkh6t
+  namespace: dev
+type: Opaque
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastapi-webapp-service
+  namespace: dev
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: fastapi-webapp
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: fastapi-webapp
+  name: fastapi-webapp-deployment
+  namespace: dev
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fastapi-webapp
+  template:
+    metadata:
+      labels:
+        app: fastapi-webapp
+    spec:
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: app-envs-kbfhgg8dhd
+        image: falrayes/app-argocd-workshop:233c9a64080fe92d6d53b8cbe91282d0bc426b20
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        name: fastapi-webapp-container
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        resources:
+          limits:
+            cpu: "1"
+            memory: 512Mi
+          requests:
+            cpu: "0.2"
+            memory: 256Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - NET_RAW
+          readOnlyRootFilesystem: true
+          runAsUser: 10001
+        volumeMounts:
+        - mountPath: /secrets
+          name: api-key
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+      - name: api-key
+        secret:
+          secretName: app-secrets-268cfkkh6t
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  labels:
+    app: go-webapp
+  name: go-webapp-ingress
+  namespace: dev
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: go-webapp-service
+            port:
+              number: 8080
+        path: /
+        pathType: Exact
+      - backend:
+          service:
+            name: go-webapp-service
+            port:
+              number: 8080
+        path: /assets
+        pathType: Prefix

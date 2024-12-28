@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: fastapi-webapp-container
-          image: falrayes/app-argocd-workshop:image-tag
+          image: falrayes/fastapi-argocd-workshop:image-tag
           envFrom:
             - configMapRef:
                 name: app-envs
@@ -29,35 +29,35 @@ spec:
               memory: 256Mi
               cpu: "0.2"
           livenessProbe:
-              httpGet:
-                path: /health
-                port: 8080
-              initialDelaySeconds: 5
-              periodSeconds: 10
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
           readinessProbe:
-              httpGet:
-                path: /ready
-                port: 8080
-              initialDelaySeconds: 5
-              periodSeconds: 10
+            httpGet:
+              path: /ready
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
           volumeMounts:
             - name: api-key
               mountPath: /secrets
           securityContext:
-              capabilities:
-                drop:
-                  - NET_RAW
-              readOnlyRootFilesystem: true
-              allowPrivilegeEscalation: false
-              runAsUser: 10001
+            capabilities:
+              drop:
+                - NET_RAW
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            runAsUser: 10001
       volumes:
         - name: api-key
           secret:
             secretName: app-secrets
       securityContext:
-            seccompProfile:
-              type: RuntimeDefault
-            runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+        runAsNonRoot: true
 ---
 apiVersion: v1
 kind: Service
