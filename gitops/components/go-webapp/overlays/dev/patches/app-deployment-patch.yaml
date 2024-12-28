@@ -1,13 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fastapi-webapp-deployment
+  name: go-webapp-deployment
   labels:
-    app: fastapi-webapp
+    app: go-webapp
 spec:
   replicas: 2
   template:
     spec:
       containers:
-        - name: fastapi-webapp-container
+        - name: go-webapp-container
           image: falrayes/go-argocd-workshop:dev-b229d0903a9bbacd673145395c766f8eca0e7fb8

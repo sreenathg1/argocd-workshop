@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fastapi-webapp-deployment
+  name: go-webapp-deployment
   labels:
-    app: fastapi-webapp
+    app: go-webapp
 spec:
   selector:
     matchLabels:
-      app: fastapi-webapp
+      app: go-webapp
   template:
     metadata:
       labels:
-        app: fastapi-webapp
+        app: go-webapp
     spec:
       containers:
-        - name: fastapi-webapp-container
+        - name: go-webapp-container
           image: falrayes/go-argocd-workshop:image-tag
           envFrom:
             - configMapRef:
@@ -62,7 +62,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: fastapi-webapp-service
+  name: go-webapp-service
 spec:
   ports:
     - name: http
@@ -70,4 +70,4 @@ spec:
       port: 8080
       targetPort: 8080
   selector:
-    app: fastapi-webapp
+    app: go-webapp
