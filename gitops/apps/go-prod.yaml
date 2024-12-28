@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: go-webapp-prod
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/FaisalAl-Rayes/argocd-workshop.git
+    targetRevision: HEAD
+    path: gitops/components/go-webapp/overlays/prod
+
+  destination:
+    name: prod-cluster
+    namespace: prod
+
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+    syncOptions:
+      - CreateNamespace=true

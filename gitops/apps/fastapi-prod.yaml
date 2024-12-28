@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: fastapi-webapp-dev
+  name: fastapi-webapp-prod
   namespace: argocd
 spec:
   project: default
@@ -9,11 +9,11 @@ spec:
   source:
     repoURL: https://github.com/FaisalAl-Rayes/argocd-workshop.git
     targetRevision: HEAD
-    path: gitops/overlays/dev
+    path: gitops/components/fastapi-webapp/overlays/prod
 
   destination:
-    server: https://kubernetes.default.svc
-    namespace: dev
+    name: prod-cluster
+    namespace: prod
 
   syncPolicy:
     automated:

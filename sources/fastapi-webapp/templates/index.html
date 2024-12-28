@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>FastAPI ArgoCD Workshop</title>
+  <link rel="stylesheet" href="/assets/style.css">
+</head>
+
+<body>
+  <main>
+    <header>
+      <a class="logo" href="/">FastAPI ArgoCD Workshop</a>
+      <a href="https://github.com/FaisalAl-Rayes/argocd-workshop" class="button github-button">View on GitHub</a>
+    </header>
+    <section class="container">
+        <li class="news-article">
+          <div>
+            <h3 class="title">Cluster: {{ cluster }}</h3>
+            <p class="description">Image: {{ image }}</p>
+            <p class="description">API Key: {{ api_key }}</p>
+          </div>
+          <img class="article-image" src="{{ cluster_image }}" />
+        </li>
+    </section>
+  </main>
+</body>
+
+</html>

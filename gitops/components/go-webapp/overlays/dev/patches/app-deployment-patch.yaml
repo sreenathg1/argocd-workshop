@@ -1,0 +1,13 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-webapp-deployment
+  labels:
+    app: fastapi-webapp
+spec:
+  replicas: 2
+  template:
+    spec:
+      containers:
+        - name: fastapi-webapp-container
+          image: falrayes/app-argocd-workshop:233c9a64080fe92d6d53b8cbe91282d0bc426b20
