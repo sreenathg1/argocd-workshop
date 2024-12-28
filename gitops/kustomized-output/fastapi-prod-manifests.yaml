@@ -1,4 +1,4 @@
-# git commit: b229d0903a9bbacd673145395c766f8eca0e7fb8
+# git commit: 55360a1e5ab56b791ddc09de75a19e5630f2b5fe
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -59,7 +59,7 @@ spec:
       - envFrom:
         - configMapRef:
             name: app-envs-5ft77hhbt2
-        image: falrayes/fastapi-argocd-workshop:prod-b229d0903a9bbacd673145395c766f8eca0e7fb8
+        image: falrayes/fastapi-argocd-workshop:prod-55360a1e5ab56b791ddc09de75a19e5630f2b5fe
         livenessProbe:
           httpGet:
             path: /health
