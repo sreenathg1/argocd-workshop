@@ -54,6 +54,7 @@ jobs:
 
       - name: Image digest
         run: echo ${{ steps.docker_build_fastapi.outputs.digest }}
+
   build-go:
     name: Build the go webapp container image
     if: |
