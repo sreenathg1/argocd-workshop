@@ -1,4 +1,4 @@
-# git commit: 82c29607e5a0c542398544034eca5fb372dd4e6a
+# git commit: c907bd9bc5d9e5b284bf8251ce6eac3fe075ca02
 apiVersion: v1
 data:
   CLUSTER: prod-cluster
@@ -54,7 +54,7 @@ spec:
       - envFrom:
         - configMapRef:
             name: app-envs-5ft77hhbt2
-        image: falrayes/fastapi-argocd-workshop:prod-82c29607e5a0c542398544034eca5fb372dd4e6a
+        image: falrayes/fastapi-argocd-workshop:prod-c907bd9bc5d9e5b284bf8251ce6eac3fe075ca02
         livenessProbe:
           httpGet:
             path: /health

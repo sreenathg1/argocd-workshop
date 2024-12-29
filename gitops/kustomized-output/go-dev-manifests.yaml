@@ -1,4 +1,4 @@
-# git commit: 82c29607e5a0c542398544034eca5fb372dd4e6a
+# git commit: c907bd9bc5d9e5b284bf8251ce6eac3fe075ca02
 apiVersion: v1
 data:
   CLUSTER: dev-cluster
@@ -54,7 +54,7 @@ spec:
       - envFrom:
         - configMapRef:
             name: app-envs-kbfhgg8dhd
-        image: falrayes/go-argocd-workshop:dev-82c29607e5a0c542398544034eca5fb372dd4e6a
+        image: falrayes/go-argocd-workshop:dev-c907bd9bc5d9e5b284bf8251ce6eac3fe075ca02
         livenessProbe:
           httpGet:
             path: /health
