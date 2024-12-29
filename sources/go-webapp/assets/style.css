@@ -44,7 +44,7 @@ a.button {
 a.button:hover {
 	text-decoration: none;
 	background-color: var(--wine-red);
-	color: var(--go);
+	color: var(--wine-red);
 }
 
 header {
