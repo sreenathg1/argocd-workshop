@@ -1,9 +1,4 @@
-# git commit: 55360a1e5ab56b791ddc09de75a19e5630f2b5fe
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: prod
----
+# git commit: 7e44a17497cb234de08fafde37e54ee6cec8b7f2
 apiVersion: v1
 data:
   CLUSTER: prod-cluster
@@ -59,7 +54,7 @@ spec:
       - envFrom:
         - configMapRef:
             name: app-envs-5ft77hhbt2
-        image: falrayes/go-argocd-workshop:prod-55360a1e5ab56b791ddc09de75a19e5630f2b5fe
+        image: falrayes/go-argocd-workshop:prod-7e44a17497cb234de08fafde37e54ee6cec8b7f2
         livenessProbe:
           httpGet:
             path: /health
