@@ -16,6 +16,7 @@ html {
 	--dark-grey: #777;
 	--cream: #f5f5dc;
 	--wine-red: #8e2626;
+    --fastapi-green: #009485;
 }
 
 body {
@@ -33,7 +34,7 @@ a:hover {
 
 a.button {
 	border: 2px solid #f5f5dc;
-	color: var(--dark-green);
+	color: var(--wine-red);
 	border-radius: 4px;
 	padding: 6px 24px;
 	font-size: 14px;
@@ -42,8 +43,8 @@ a.button {
 
 a.button:hover {
 	text-decoration: none;
-	background-color: var(--dark-green);
-	color: var(--wine-red);
+	background-color: var(--wine-red);
+	color: var(--fastapi-green);
 }
 
 header {
@@ -55,7 +56,7 @@ header {
 	right: 0;
 	display: flex;
 	justify-content: space-between;
-	background-color: var(--wine-red);
+	background-color: var(--fastapi-green);
 	padding: 5px 10px;
 	align-items: center;
 }
@@ -74,7 +75,7 @@ form {
 	border-radius: 4px;
 	border-color: transparent;
 	background-color: var(--cream);
-	color: var(--wine-red);
+	color: var(--fastapi-green);
 	font-size: 16px;
 	line-height: 1.4;
 	padding-left: 5px;
@@ -106,7 +107,7 @@ form {
 	width: fit-content;
 	height: fit-content;
 	margin-bottom: 30px;
-	border: 3px solid var(--wine-red);
+	border: 3px solid var(--fastapi-green);
 	padding: 15px;
 	border-radius: 4px;
 	justify-content: space-between;
@@ -130,7 +131,7 @@ form {
 
 .metadata {
 	display: flex;
-	color: var(--dark-green);
+	color: var(--wine-red);
 	font-size: 14px;
 }
 
