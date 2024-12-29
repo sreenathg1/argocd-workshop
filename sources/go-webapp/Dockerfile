@@ -50,4 +50,4 @@ COPY --from=Builder /go/bin/webapp /go/bin/webapp
 USER appuser:appuser
 
 # Run the built binary.
-ENTRYPOINT /go/bin/webapp
+ENTRYPOINT ["/go/bin/webapp"]
