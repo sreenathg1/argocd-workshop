@@ -28,7 +28,7 @@ func readinessHandler(writer http.ResponseWriter, _ *http.Request) {
 
 func indexHandler(writer http.ResponseWriter, _ *http.Request) {
 
-	apiKey, err := os.ReadFile("/secrets/api_key.secret.example")
+	apiKeyBytes, err := os.ReadFile("/secrets/api_key.secret.example")
 	if err != nil {
 		log.Fatal("ApiKey must be set")
 		os.Exit(1)
@@ -38,7 +38,7 @@ func indexHandler(writer http.ResponseWriter, _ *http.Request) {
     data := map[string]interface{}{
         "Cluster":  cluster,
         "Image":    image,
-        "ApiKey":   apiKey,
+        "ApiKey":   string(apiKeyBytes),
         "ClusterImage": "assets/images/" + clusterImagePath + ".png",
     }
     err = htmlTemplate.Execute(buf, data)
