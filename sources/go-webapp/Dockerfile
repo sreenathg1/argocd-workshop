@@ -16,7 +16,7 @@ RUN go mod download
 RUN go mod verify
 
 # Build the binary for the webapp.
-RUN GOOS=linux GOARCH=amd64 go build -ldflags="-w -s" -o /go/bin/webapp
+RUN go build -ldflags="-w -s" -o /go/bin/webapp
 
 # Minimalistic small image as the final image with the sole purpose to run the binary.
 FROM alpine:3.21.0
