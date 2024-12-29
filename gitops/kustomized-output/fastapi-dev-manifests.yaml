@@ -1,4 +1,4 @@
-# git commit: 04167db1f975b8da7e4bea557ef0df5349054708
+# git commit: 131ca394789911a9e1072f419297d1ac43a0464d
 apiVersion: v1
 data:
   CLUSTER: dev-cluster
@@ -54,7 +54,7 @@ spec:
       - envFrom:
         - configMapRef:
             name: app-envs-kbfhgg8dhd
-        image: falrayes/fastapi-argocd-workshop:dev-04167db1f975b8da7e4bea557ef0df5349054708
+        image: falrayes/fastapi-argocd-workshop:dev-131ca394789911a9e1072f419297d1ac43a0464d
         livenessProbe:
           httpGet:
             path: /health
