@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - master
+    # Not efficient to build both if one is changed however this will do for now
+    paths:
+      - sources/fastapi-webapp
+      - sources/go-webapp
 
 env:
   DOCKER_FASTAPI_REPO: fastapi-argocd-workshop
@@ -98,8 +102,8 @@ jobs:
       - build-fastapi
       - build-go
     if: |
-      needs.build-fastapi.result != 'skipped' ||
-      needs.build-go.result != 'skipped'
+      !startsWith(github.event.head_commit.message, '[ci-auto-commit] ') &&
+      github.event.head_commit.author.username != 'GitHub Workflows'
     continue-on-error: false
 
     steps:
