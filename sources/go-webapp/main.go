@@ -39,7 +39,7 @@ func indexHandler(writer http.ResponseWriter, _ *http.Request) {
         "Cluster":  cluster,
         "Image":    image,
         "ApiKey":   apiKey,
-        "ClusterImage": "assets/images/" + clusterImagePath,
+        "ClusterImage": "assets/images/" + clusterImagePath + ".png",
     }
     err = htmlTemplate.Execute(buf, data)
 	if err != nil {
