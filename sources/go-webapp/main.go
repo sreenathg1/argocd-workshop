@@ -62,7 +62,7 @@ func main() {
 
 	// Serving static files.
 	fs := http.FileServer(http.Dir("assets"))
-	mux.Handle("/go/assets/", http.StripPrefix("/assets/", fs))
+	mux.Handle("/go/assets/", http.StripPrefix("/go/assets/", fs))
 
 	mux.HandleFunc("/go", indexHandler)
 	mux.HandleFunc("/go/health", livenessHandler) // Endpoint for liveness probe
