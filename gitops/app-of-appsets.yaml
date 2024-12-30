@@ -7,7 +7,7 @@ spec:
   project: default
 
   source:
-    repoURL: https://github.com/Faisal-AlRayes/argocd-workshop.git
+    repoURL: https://github.com/FaisalAl-Rayes/argocd-workshop.git
     targetRevision: HEAD
     path: gitops/appsets
 
