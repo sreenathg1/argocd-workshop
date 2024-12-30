@@ -10,13 +10,6 @@ spec:
     - http:
         paths:
         - path: /
-          pathType: Exact
-          backend:
-            service:
-              name: go-webapp-service
-              port:
-                number: 8080
-        - path: /assets
           pathType: Prefix
           backend:
             service:
