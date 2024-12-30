@@ -1,7 +1,8 @@
 resources:
   - ../../base
+  - namespace.yaml
 
-namespace: prod
+namespace: prod-fastapi
 
 patches:
   - path: patches/app-deployment-patch.yaml

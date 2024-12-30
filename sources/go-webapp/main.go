@@ -39,7 +39,7 @@ func indexHandler(writer http.ResponseWriter, _ *http.Request) {
         "Cluster":  cluster,
         "Image":    image,
         "ApiKey":   string(apiKeyBytes),
-        "ClusterImage": "assets/images/" + clusterImagePath + ".png",
+        "ClusterImage": "/go/assets/images/" + clusterImagePath + ".png",
     }
     err = htmlTemplate.Execute(buf, data)
 	if err != nil {
@@ -62,11 +62,11 @@ func main() {
 
 	// Serving static files.
 	fs := http.FileServer(http.Dir("assets"))
-	mux.Handle("/assets/", http.StripPrefix("/assets/", fs))
+	mux.Handle("/go/assets/", http.StripPrefix("/assets/", fs))
 
-	mux.HandleFunc("/", indexHandler)
-	mux.HandleFunc("/health", livenessHandler) // Endpoint for liveness probe
-    mux.HandleFunc("/ready", readinessHandler) // Endpoint for readiness probe
+	mux.HandleFunc("/go", indexHandler)
+	mux.HandleFunc("/go/health", livenessHandler) // Endpoint for liveness probe
+    mux.HandleFunc("/go/ready", readinessHandler) // Endpoint for readiness probe
 
 	http.ListenAndServe(":"+port, mux)
 }

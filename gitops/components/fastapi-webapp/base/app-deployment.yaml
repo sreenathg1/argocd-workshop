@@ -30,13 +30,13 @@ spec:
               cpu: "0.2"
           livenessProbe:
             httpGet:
-              path: /health
+              path: /fastapi/health
               port: 8080
             initialDelaySeconds: 5
             periodSeconds: 10
           readinessProbe:
             httpGet:
-              path: /ready
+              path: /fastapi/ready
               port: 8080
             initialDelaySeconds: 5
             periodSeconds: 10

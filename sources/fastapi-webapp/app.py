@@ -9,7 +9,7 @@ from jinja2 import Environment, FileSystemLoader
 app = FastAPI()
 
 # Mount static files
-app.mount("/assets", StaticFiles(directory="assets"), name="assets")
+app.mount("/fastapi/assets", StaticFiles(directory="assets"), name="assets")
 
 # Jinja2 environment
 templates = Environment(loader=FileSystemLoader("templates"))
@@ -20,7 +20,7 @@ IMAGE = os.getenv("IMAGE", "Image not set")
 CLUSTER_IMAGE_PATH = os.getenv("CLUSTER_IMAGE", "")
 
 # Routes
-@app.get("/", response_class=HTMLResponse)
+@app.get("/fastapi", response_class=HTMLResponse)
 async def index():
     try:
         # Read API key from file
@@ -32,18 +32,18 @@ async def index():
         rendered = template.render(
             cluster=CLUSTER,
             image=IMAGE,
-            cluster_image=f"/assets/images/{CLUSTER_IMAGE_PATH}.png",
+            cluster_image=f"/fastapi/assets/images/{CLUSTER_IMAGE_PATH}.png",
             api_key=api_key
         )
         return HTMLResponse(content=rendered)
     except Exception as e:
         return HTMLResponse(content=f"Error: {str(e)}", status_code=500)
 
-@app.get("/health")
+@app.get("/fastapi/health")
 async def health():
     return {"status": "alive"}
 
-@app.get("/ready")
+@app.get("/fastapi/ready")
 async def readiness():
     return {"status": "ready"}
 
