@@ -9,7 +9,7 @@ spec:
   source:
     repoURL: https://github.com/Faisal-AlRayes/argocd-workshop.git
     targetRevision: HEAD
-    path: gitops/apps
+    path: gitops/appsets
 
   destination:
     server: https://kubernetes.default.svc
