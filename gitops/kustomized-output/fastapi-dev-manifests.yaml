@@ -1,8 +1,8 @@
-# git commit: 503df8e00c1a5f732ef1840883783c1604c74c81
+# git commit: 74b1073096737b9ade3c45225fc53c41eb3357ff
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: dev
+  name: dev-fastapi
 ---
 apiVersion: v1
 data:
@@ -13,7 +13,7 @@ data:
 kind: ConfigMap
 metadata:
   name: app-envs-kbfhgg8dhd
-  namespace: dev
+  namespace: dev-fastapi
 ---
 apiVersion: v1
 data:
@@ -21,14 +21,14 @@ data:
 kind: Secret
 metadata:
   name: app-secrets-268cfkkh6t
-  namespace: dev
+  namespace: dev-fastapi
 type: Opaque
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: fastapi-webapp-service
-  namespace: dev
+  namespace: dev-fastapi
 spec:
   ports:
   - name: http
@@ -44,7 +44,7 @@ metadata:
   labels:
     app: fastapi-webapp
   name: fastapi-webapp-deployment
-  namespace: dev
+  namespace: dev-fastapi
 spec:
   replicas: 2
   selector:
@@ -59,7 +59,7 @@ spec:
       - envFrom:
         - configMapRef:
             name: app-envs-kbfhgg8dhd
-        image: falrayes/fastapi-argocd-workshop:dev-503df8e00c1a5f732ef1840883783c1604c74c81
+        image: falrayes/fastapi-argocd-workshop:dev-74b1073096737b9ade3c45225fc53c41eb3357ff
         livenessProbe:
           httpGet:
             path: /fastapi/health
@@ -107,7 +107,7 @@ metadata:
   labels:
     app: fastapi-webapp
   name: fastapi-webapp-ingress
-  namespace: dev
+  namespace: dev-fastapi
 spec:
   ingressClassName: nginx
   rules:
@@ -118,5 +118,5 @@ spec:
             name: fastapi-webapp-service
             port:
               number: 8080
-        path: /fastapi/
+        path: /fastapi
         pathType: Prefix

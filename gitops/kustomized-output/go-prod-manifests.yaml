@@ -1,8 +1,8 @@
-# git commit: 503df8e00c1a5f732ef1840883783c1604c74c81
+# git commit: 74b1073096737b9ade3c45225fc53c41eb3357ff
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: prod
+  name: prod-go
 ---
 apiVersion: v1
 data:
@@ -13,7 +13,7 @@ data:
 kind: ConfigMap
 metadata:
   name: app-envs-5ft77hhbt2
-  namespace: prod
+  namespace: prod-go
 ---
 apiVersion: v1
 data:
@@ -21,14 +21,14 @@ data:
 kind: Secret
 metadata:
   name: app-secrets-7266f5km2g
-  namespace: prod
+  namespace: prod-go
 type: Opaque
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: go-webapp-service
-  namespace: prod
+  namespace: prod-go
 spec:
   ports:
   - name: http
@@ -44,7 +44,7 @@ metadata:
   labels:
     app: go-webapp
   name: go-webapp-deployment
-  namespace: prod
+  namespace: prod-go
 spec:
   replicas: 5
   selector:
@@ -59,7 +59,7 @@ spec:
       - envFrom:
         - configMapRef:
             name: app-envs-5ft77hhbt2
-        image: falrayes/go-argocd-workshop:prod-503df8e00c1a5f732ef1840883783c1604c74c81
+        image: falrayes/go-argocd-workshop:prod-74b1073096737b9ade3c45225fc53c41eb3357ff
         livenessProbe:
           httpGet:
             path: /go/health
@@ -107,7 +107,7 @@ metadata:
   labels:
     app: go-webapp
   name: go-webapp-ingress
-  namespace: prod
+  namespace: prod-go
 spec:
   ingressClassName: nginx
   rules:
@@ -118,5 +118,5 @@ spec:
             name: go-webapp-service
             port:
               number: 8080
-        path: /go/
+        path: /go
         pathType: Prefix
