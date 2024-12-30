@@ -13,7 +13,7 @@ spec:
 
   destination:
     name: prod-cluster
-    namespace: prod
+    namespace: prod-fastapi
 
   syncPolicy:
     automated:
