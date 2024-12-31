@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: prod-webapp-set
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - name: in-cluster
+            nameNormalized: fastapi-app
+            repoURL: https://github.com/FaisalAl-Rayes/argocd-workshop.git
+            path: gitops/components/fastapi-webapp/overlays/prod
+            namespace: prod-fastapi
+          - name: in-cluster
+            nameNormalized: go-app
+            repoURL: https://github.com/FaisalAl-Rayes/argocd-workshop.git
+            path: gitops/components/go-webapp/overlays/prod
+            namespace: prod-go
+  template:
+    metadata:
+      name: 'prod-{{nameNormalized}}'
+    spec:
+      project: default
+      source:
+        repoURL: '{{repoURL}}'
+        targetRevision: HEAD
+        path: '{{path}}'
+      destination:
+        name: '{{name}}'
+        namespace: '{{namespace}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true

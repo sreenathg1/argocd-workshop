@@ -1,6 +1,8 @@
-name: Go Deployment CI
+name: Deployment CI
 
 on:
+  workflow_dispatch:
+
   push:
     branches:
       - master
