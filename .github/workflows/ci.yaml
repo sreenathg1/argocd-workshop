@@ -11,9 +11,9 @@ on:
       - 'sources/go-webapp/**'
 
 env:
-  REGISTRY_URL: docker.io
-  REGISTRY_USER: falrayes
+  REGISTRY_URL: quay.io
   REGISTRY_USERNAME: falrayes
+  REGISTRY_ACCESS_USER: falrayes+argocd_workshop
   FASTAPI_IMAGE_REPO: fastapi-argocd-workshop
   GO_IMAGE_REPO: go-argocd-workshop
   CI_COMMIT_MESSAGE: "[ci-auto-commit] Continuous Integration: Manifests generated and updated."
@@ -51,9 +51,9 @@ jobs:
         with:
           image: ${{ steps.build-fastapi-image.outputs.image }}
           tags: ${{ steps.build-fastapi-image.outputs.tags }}
-          registry: ${{ env.REGISTRY_URL }}/${{ env.REGISTRY_USER }}
-          username: ${{ env.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
+          registry: ${{ env.REGISTRY_URL }}/${{ env.REGISTRY_USERNAME }}
+          username: ${{ env.REGISTRY_ACCESS_USER }}
+          password: ${{ secrets.REGISTRY_ACCESS_TOKEN }}
 
       - name: Save the FastAPI image urls
         id: save-fastapi-image-urls
@@ -92,9 +92,9 @@ jobs:
         with:
           image: ${{ steps.build-go-image.outputs.image }}
           tags: ${{ steps.build-go-image.outputs.tags }}
-          registry: ${{ env.REGISTRY_URL }}/${{ env.REGISTRY_USER }}
-          username: ${{ env.REGISTRY_USERNAME }}
-          password: ${{ secrets.REGISTRY_PASSWORD }}
+          registry: ${{ env.REGISTRY_URL }}/${{ env.REGISTRY_USERNAME }}
+          username: ${{ env.REGISTRY_ACCESS_USER }}
+          password: ${{ secrets.REGISTRY_ACCESS_TOKEN }}
 
       - name: Save the Go image urls
         id: save-go-image-urls
