@@ -1,4 +1,4 @@
-# git commit: 471c31246664f50d8490457e594b0d26d23b0b0b
+# git commit: 0988b4733f6a07f20834bc853cdb42c974f65c35
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -59,7 +59,7 @@ spec:
       - envFrom:
         - configMapRef:
             name: app-envs-kbfhgg8dhd
-        image: :dev-471c31246664f50d8490457e594b0d26d23b0b0b
+        image: quay.io/falrayes/fastapi-argocd-workshop:dev-0988b4733f6a07f20834bc853cdb42c974f65c35:dev-0988b4733f6a07f20834bc853cdb42c974f65c35
         livenessProbe:
           httpGet:
             path: /fastapi/health
