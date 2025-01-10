@@ -1,0 +1,147 @@
+name: Better Deployment CI
+
+on:
+  workflow_dispatch:
+
+env:
+  REGISTRY_URL: quay.io
+  REGISTRY_USER: falrayes
+  FASTAPI_IMAGE_REPO: fastapi-argocd-workshop
+  GO_IMAGE_REPO: go-argocd-workshop
+  CI_COMMIT_MESSAGE: "[ci-auto-commit] Continuous Integration: Manifests generated and updated."
+  CI_COMMIT_AUTHOR: GitHub Workflows
+
+jobs:
+  build-fastapi:
+    name: Build the fastapi webapp container image
+    runs-on: ubuntu-latest
+    outputs:
+      dev-image: ${{ steps.save-fastapi-image-urls.outputs.dev-image }}
+      prod-image: ${{ steps.save-fastapi-image-urls.outputs.prod-image }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Build FastAPI Image
+        id: build-fastapi-image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ${{ env.FASTAPI_IMAGE_REPO }}
+          tags: latest dev-${{ github.sha }} prod-${{ github.sha }}
+          platforms: linux/amd64, linux/arm64, linux/arm64/v8
+          context: ./sources/fastapi-webapp/
+          containerfiles: |
+            ./sources/fastapi-webapp/Containerfile
+
+      - name: Push To Registry
+        id: push-fastapi-to-registry
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-fastapi-image.outputs.image }}
+          tags: ${{ steps.build-fastapi-image.outputs.tags }}
+          registry: ${{ env.REGISTRY_URL }}/${{ env.REGISTRY_USER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Save the FastAPI image urls
+        id: save-fastapi-image-urls
+        run: |
+          echo "dev-image=${{ steps.push-fastapi-to-registry.outputs.registry-paths[1] }}" >> "$GITHUB_OUTPUT"
+          echo "prod-image=${{ steps.push-fastapi-to-registry.outputs.registry-paths[2] }}" >> "$GITHUB_OUTPUT"
+
+  build-go:
+    name: Build the go webapp container image
+    runs-on: ubuntu-latest
+    outputs:
+      dev-image: ${{ steps.save-go-image-urls.outputs.dev-image }}
+      prod-image: ${{ steps.save-go-image-urls.outputs.prod-image }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Build Go Image
+        id: build-go-image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ${{ env.GO_IMAGE_REPO }}
+          tags: latest dev-${{ github.sha }} prod-${{ github.sha }}
+          platforms: linux/amd64, linux/arm64, linux/arm64/v8
+          context: ./sources/go-webapp/
+          containerfiles: |
+            ./sources/go-webapp/Containerfile
+
+      - name: Push To Registry
+        id: push-go-to-registry
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-go-image.outputs.image }}
+          tags: ${{ steps.build-go-image.outputs.tags }}
+          registry: ${{ env.REGISTRY_URL }}/${{ env.REGISTRY_USER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Save the Go image urls
+        id: save-go-image-urls
+        run: |
+          echo "dev-image=${{ steps.push-go-to-registry.outputs.registry-paths[1] }}" >> "$GITHUB_OUTPUT"
+          echo "prod-image=${{ steps.push-go-to-registry.outputs.registry-paths[2] }}" >> "$GITHUB_OUTPUT"
+  
+  update-manifests:
+    name: Update the kubernetes manifests
+    runs-on: ubuntu-latest
+    needs:
+      - build-fastapi
+      - build-go
+    continue-on-error: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install kustomize
+        run: |
+          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
+          sudo mv kustomize /usr/local/bin
+
+      # This step is very important for the CD part of the pipeline.
+      # The generated manifests in the step(Generate and update manifests) are for any user to take a quick look on the manifests built by Kustomize and are being applied.
+      # However ArgoCD is pointing towards the particular overlay with a kustomize.yaml file to generate and apply the manifests immediately.
+      # Put simply it is the overlay that will be the source of the apply (kubectl apply -k overlay/dev) NOT (kubectl apply -f gitops/kustomized-output/manifests.yaml)
+      - name: Update the patch with the approperiate tag name for ArgoCD
+        run: |
+          sed -i 's|image:.*:.*|image: ${{ needs.build-fastapi.outputs.dev-image }}:dev-${{ github.sha }}|' gitops/components/fastapi-webapp/overlays/dev/patches/app-deployment-patch.yaml
+          sed -i 's|image: ${{ env.REGISTRY_URL }}/${{ env.REGISTRY_USER }}/${{ env.FASTAPI_IMAGE_REPO }}:.*|image: ${{ env.REGISTRY_URL }}/${{ env.REGISTRY_USER }}/${{ env.FASTAPI_IMAGE_REPO }}:prod-${{ github.sha }}|' gitops/components/fastapi-webapp/overlays/prod/patches/app-deployment-patch.yaml
+          sed -i 's|image: ${{ env.REGISTRY_URL }}/${{ env.REGISTRY_USER }}/${{ env.GO_IMAGE_REPO }}:.*|image: ${{ env.REGISTRY_URL }}/${{ env.REGISTRY_USER }}/${{ env.GO_IMAGE_REPO }}:dev-${{ github.sha }}|' gitops/components/go-webapp/overlays/dev/patches/app-deployment-patch.yaml
+          sed -i 's|image: ${{ env.REGISTRY_URL }}/${{ env.REGISTRY_USER }}/${{ env.GO_IMAGE_REPO }}:.*|image: ${{ env.REGISTRY_URL }}/${{ env.REGISTRY_USER }}/${{ env.GO_IMAGE_REPO }}:prod-${{ github.sha }}|' gitops/components/go-webapp/overlays/prod/patches/app-deployment-patch.yaml
+
+      - name: Generate and update manifests
+        run: |
+          kustomize build gitops/components/fastapi-webapp/overlays/dev > gitops/kustomized-output/fastapi-dev-manifests.yaml
+          kustomize build gitops/components/fastapi-webapp/overlays/prod > gitops/kustomized-output/fastapi-prod-manifests.yaml
+          kustomize build gitops/components/go-webapp/overlays/dev > gitops/kustomized-output/go-dev-manifests.yaml
+          kustomize build gitops/components/go-webapp/overlays/prod > gitops/kustomized-output/go-prod-manifests.yaml
+          sed -i '1s/^/# git commit: ${{ github.sha }}\n/' gitops/kustomized-output/fastapi-dev-manifests.yaml
+          sed -i '1s/^/# git commit: ${{ github.sha }}\n/' gitops/kustomized-output/fastapi-prod-manifests.yaml
+          sed -i '1s/^/# git commit: ${{ github.sha }}\n/' gitops/kustomized-output/go-dev-manifests.yaml
+          sed -i '1s/^/# git commit: ${{ github.sha }}\n/' gitops/kustomized-output/go-prod-manifests.yaml
+
+      - name: Git setup, add, commit, and push
+        run: |
+          git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+          git config --global user.email "${{ secrets.GIT_EMAIL }}"
+          git add gitops/kustomized-output/fastapi-dev-manifests.yaml
+          git add gitops/kustomized-output/fastapi-prod-manifests.yaml
+          git add gitops/kustomized-output/go-dev-manifests.yaml
+          git add gitops/kustomized-output/go-prod-manifests.yaml
+          git add gitops/components/fastapi-webapp/overlays/dev/patches/app-deployment-patch.yaml
+          git add gitops/components/fastapi-webapp/overlays/prod/patches/app-deployment-patch.yaml
+          git add gitops/components/go-webapp/overlays/dev/patches/app-deployment-patch.yaml
+          git add gitops/components/go-webapp/overlays/prod/patches/app-deployment-patch.yaml
+          git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
+          git push
