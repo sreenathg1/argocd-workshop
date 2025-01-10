@@ -10,4 +10,4 @@ spec:
     spec:
       containers:
         - name: fastapi-webapp-container
-          image: falrayes/fastapi-argocd-workshop:dev-580bffcae4eaf21573ef48f13ad2b7cc9ed94f55
+          image: :dev-471c31246664f50d8490457e594b0d26d23b0b0b

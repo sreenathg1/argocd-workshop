@@ -30,6 +30,7 @@ jobs:
         uses: redhat-actions/buildah-build@v2
         with:
           image: ${{ env.FASTAPI_IMAGE_REPO }}
+          layers: true
           tags: latest dev-${{ github.sha }} prod-${{ github.sha }}
           platforms: linux/amd64, linux/arm64, linux/arm64/v8
           context: ./sources/fastapi-webapp/
@@ -49,8 +50,8 @@ jobs:
       - name: Save the FastAPI image urls
         id: save-fastapi-image-urls
         run: |
-          echo "dev-image=${{ steps.push-fastapi-to-registry.outputs.registry-paths[1] }}" >> "$GITHUB_OUTPUT"
-          echo "prod-image=${{ steps.push-fastapi-to-registry.outputs.registry-paths[2] }}" >> "$GITHUB_OUTPUT"
+          echo "dev-image=$(echo '${{ steps.push-fastapi-to-registry.outputs.registry-paths }}' | jq -r '.[1]')" >> "$GITHUB_OUTPUT"
+          echo "prod-image=$(echo '${{ steps.push-fastapi-to-registry.outputs.registry-paths }}' | jq -r '.[2]')" >> "$GITHUB_OUTPUT"
 
   build-go:
     name: Build the go webapp container image
@@ -71,6 +72,7 @@ jobs:
         with:
           image: ${{ env.GO_IMAGE_REPO }}
           tags: latest dev-${{ github.sha }} prod-${{ github.sha }}
+          layers: true
           platforms: linux/amd64, linux/arm64, linux/arm64/v8
           context: ./sources/go-webapp/
           containerfiles: |
@@ -89,8 +91,8 @@ jobs:
       - name: Save the Go image urls
         id: save-go-image-urls
         run: |
-          echo "dev-image=${{ steps.push-go-to-registry.outputs.registry-paths[1] }}" >> "$GITHUB_OUTPUT"
-          echo "prod-image=${{ steps.push-go-to-registry.outputs.registry-paths[2] }}" >> "$GITHUB_OUTPUT"
+          echo "dev-image=$(echo '${{ steps.push-go-to-registry.outputs.registry-paths }}' | jq -r '.[1]')" >> "$GITHUB_OUTPUT"
+          echo "prod-image=$(echo '${{ steps.push-go-to-registry.outputs.registry-paths }}' | jq -r '.[2]')" >> "$GITHUB_OUTPUT"
   
   update-manifests:
     name: Update the kubernetes manifests
@@ -116,9 +118,9 @@ jobs:
       - name: Update the patch with the approperiate tag name for ArgoCD
         run: |
           sed -i 's|image:.*:.*|image: ${{ needs.build-fastapi.outputs.dev-image }}:dev-${{ github.sha }}|' gitops/components/fastapi-webapp/overlays/dev/patches/app-deployment-patch.yaml
-          sed -i 's|image: ${{ env.REGISTRY_URL }}/${{ env.REGISTRY_USER }}/${{ env.FASTAPI_IMAGE_REPO }}:.*|image: ${{ env.REGISTRY_URL }}/${{ env.REGISTRY_USER }}/${{ env.FASTAPI_IMAGE_REPO }}:prod-${{ github.sha }}|' gitops/components/fastapi-webapp/overlays/prod/patches/app-deployment-patch.yaml
-          sed -i 's|image: ${{ env.REGISTRY_URL }}/${{ env.REGISTRY_USER }}/${{ env.GO_IMAGE_REPO }}:.*|image: ${{ env.REGISTRY_URL }}/${{ env.REGISTRY_USER }}/${{ env.GO_IMAGE_REPO }}:dev-${{ github.sha }}|' gitops/components/go-webapp/overlays/dev/patches/app-deployment-patch.yaml
-          sed -i 's|image: ${{ env.REGISTRY_URL }}/${{ env.REGISTRY_USER }}/${{ env.GO_IMAGE_REPO }}:.*|image: ${{ env.REGISTRY_URL }}/${{ env.REGISTRY_USER }}/${{ env.GO_IMAGE_REPO }}:prod-${{ github.sha }}|' gitops/components/go-webapp/overlays/prod/patches/app-deployment-patch.yaml
+          sed -i 's|image:.*:.*|image: ${{ needs.build-fastapi.outputs.prod-image }}:prod-${{ github.sha }}|' gitops/components/fastapi-webapp/overlays/prod/patches/app-deployment-patch.yaml
+          sed -i 's|image:.*:.*|image: ${{ needs.build-go.outputs.dev-image }}:dev-${{ github.sha }}|' gitops/components/go-webapp/overlays/dev/patches/app-deployment-patch.yaml
+          sed -i 's|image:.*:.*|image: ${{ needs.build-go.outputs.prod-image }}:prod-${{ github.sha }}|' gitops/components/go-webapp/overlays/prod/patches/app-deployment-patch.yaml
 
       - name: Generate and update manifests
         run: |
