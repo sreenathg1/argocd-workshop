@@ -2,7 +2,6 @@ name: Deployment CI
 
 on:
   workflow_dispatch:
-
   push:
     branches:
       - master
@@ -12,91 +11,95 @@ on:
       - 'sources/go-webapp/**'
 
 env:
-  DOCKER_FASTAPI_REPO: fastapi-argocd-workshop
-  DOCKER_GO_REPO: go-argocd-workshop
+  REGISTRY_URL: quay.io
+  REGISTRY_USER: falrayes
+  FASTAPI_IMAGE_REPO: fastapi-argocd-workshop
+  GO_IMAGE_REPO: go-argocd-workshop
   CI_COMMIT_MESSAGE: "[ci-auto-commit] Continuous Integration: Manifests generated and updated."
   CI_COMMIT_AUTHOR: GitHub Workflows
 
 jobs:
   build-fastapi:
     name: Build the fastapi webapp container image
-    # if: |
-    #   !startsWith(github.event.head_commit.message, '[ci-auto-commit] ') &&
-    #   github.event.head_commit.author.username != 'GitHub Workflows'
     runs-on: ubuntu-latest
+    outputs:
+      dev-image: ${{ steps.save-fastapi-image-urls.outputs.dev-image }}
+      prod-image: ${{ steps.save-fastapi-image-urls.outputs.prod-image }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
-      
-      # These build/push steps are just simplifications since image promotion is not point of this workshop
-      - name: Build and push fastapi webapp
-        id: docker_build_fastapi
-        uses: docker/build-push-action@v4
+      - name: Build FastAPI Image
+        id: build-fastapi-image
+        uses: redhat-actions/buildah-build@v2
         with:
-          platforms: linux/amd64,linux/arm64,linux/arm64/v8
-          context: ./sources/fastapi-webapp
-          file: ./sources/fastapi-webapp/Containerfile
-          push: true
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_FASTAPI_REPO }}:latest
-            ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_FASTAPI_REPO }}:dev-${{ github.sha }}
-            ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_FASTAPI_REPO }}:prod-${{ github.sha }}
+          image: ${{ env.FASTAPI_IMAGE_REPO }}
+          layers: true
+          tags: latest dev-${{ github.sha }} prod-${{ github.sha }}
+          platforms: linux/amd64, linux/arm64, linux/arm64/v8
+          context: ./sources/fastapi-webapp/
+          containerfiles: |
+            ./sources/fastapi-webapp/Containerfile
 
-      - name: Image digest
-        run: echo ${{ steps.docker_build_fastapi.outputs.digest }}
+      - name: Push To Registry
+        id: push-fastapi-to-registry
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-fastapi-image.outputs.image }}
+          tags: ${{ steps.build-fastapi-image.outputs.tags }}
+          registry: ${{ env.REGISTRY_URL }}/${{ env.REGISTRY_USER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Save the FastAPI image urls
+        id: save-fastapi-image-urls
+        run: |
+          echo "dev-image=$(echo '${{ steps.push-fastapi-to-registry.outputs.registry-paths }}' | jq -r '.[1]')" >> "$GITHUB_OUTPUT"
+          echo "prod-image=$(echo '${{ steps.push-fastapi-to-registry.outputs.registry-paths }}' | jq -r '.[2]')" >> "$GITHUB_OUTPUT"
 
   build-go:
     name: Build the go webapp container image
-    # if: |
-    #   !startsWith(github.event.head_commit.message, '[ci-auto-commit] ') &&
-    #   github.event.head_commit.author.username != 'GitHub Workflows'
     runs-on: ubuntu-latest
+    outputs:
+      dev-image: ${{ steps.save-go-image-urls.outputs.dev-image }}
+      prod-image: ${{ steps.save-go-image-urls.outputs.prod-image }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
-
-      # These build/push steps are just simplifications since image promotion is not point of this workshop
-      - name: Build and push go webapp
-        id: docker_build_go
-        uses: docker/build-push-action@v4
+      - name: Build Go Image
+        id: build-go-image
+        uses: redhat-actions/buildah-build@v2
         with:
-          platforms: linux/amd64,linux/arm64,linux/arm64/v8
-          context: ./sources/go-webapp
-          file: ./sources/go-webapp/Containerfile
-          push: true
-          tags: |
-            ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_GO_REPO }}:latest
-            ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_GO_REPO }}:dev-${{ github.sha }}
-            ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_GO_REPO }}:prod-${{ github.sha }}
+          image: ${{ env.GO_IMAGE_REPO }}
+          tags: latest dev-${{ github.sha }} prod-${{ github.sha }}
+          layers: true
+          platforms: linux/amd64, linux/arm64, linux/arm64/v8
+          context: ./sources/go-webapp/
+          containerfiles: |
+            ./sources/go-webapp/Containerfile
 
-      - name: Image digest
-        run: echo ${{ steps.docker_build_go.outputs.digest }}
+      - name: Push To Registry
+        id: push-go-to-registry
+        uses: redhat-actions/push-to-registry@v2
+        with:
+          image: ${{ steps.build-go-image.outputs.image }}
+          tags: ${{ steps.build-go-image.outputs.tags }}
+          registry: ${{ env.REGISTRY_URL }}/${{ env.REGISTRY_USER }}
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
+
+      - name: Save the Go image urls
+        id: save-go-image-urls
+        run: |
+          echo "dev-image=$(echo '${{ steps.push-go-to-registry.outputs.registry-paths }}' | jq -r '.[1]')" >> "$GITHUB_OUTPUT"
+          echo "prod-image=$(echo '${{ steps.push-go-to-registry.outputs.registry-paths }}' | jq -r '.[2]')" >> "$GITHUB_OUTPUT"
   
   update-manifests:
     name: Update the kubernetes manifests
@@ -121,10 +124,10 @@ jobs:
       # Put simply it is the overlay that will be the source of the apply (kubectl apply -k overlay/dev) NOT (kubectl apply -f gitops/kustomized-output/manifests.yaml)
       - name: Update the patch with the approperiate tag name for ArgoCD
         run: |
-          sed -i 's|image: ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_FASTAPI_REPO }}:.*|image: ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_FASTAPI_REPO }}:dev-${{ github.sha }}|' gitops/components/fastapi-webapp/overlays/dev/patches/app-deployment-patch.yaml
-          sed -i 's|image: ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_FASTAPI_REPO }}:.*|image: ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_FASTAPI_REPO }}:prod-${{ github.sha }}|' gitops/components/fastapi-webapp/overlays/prod/patches/app-deployment-patch.yaml
-          sed -i 's|image: ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_GO_REPO }}:.*|image: ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_GO_REPO }}:dev-${{ github.sha }}|' gitops/components/go-webapp/overlays/dev/patches/app-deployment-patch.yaml
-          sed -i 's|image: ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_GO_REPO }}:.*|image: ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_GO_REPO }}:prod-${{ github.sha }}|' gitops/components/go-webapp/overlays/prod/patches/app-deployment-patch.yaml
+          sed -i 's|image:.*:.*|image: ${{ needs.build-fastapi.outputs.dev-image }}|' gitops/components/fastapi-webapp/overlays/dev/patches/app-deployment-patch.yaml
+          sed -i 's|image:.*:.*|image: ${{ needs.build-fastapi.outputs.prod-image }}|' gitops/components/fastapi-webapp/overlays/prod/patches/app-deployment-patch.yaml
+          sed -i 's|image:.*:.*|image: ${{ needs.build-go.outputs.dev-image }}|' gitops/components/go-webapp/overlays/dev/patches/app-deployment-patch.yaml
+          sed -i 's|image:.*:.*|image: ${{ needs.build-go.outputs.prod-image }}|' gitops/components/go-webapp/overlays/prod/patches/app-deployment-patch.yaml
 
       - name: Generate and update manifests
         run: |
