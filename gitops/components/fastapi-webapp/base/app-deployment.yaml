@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: fastapi-webapp-container
-          image: falrayes/fastapi-argocd-workshop:image-tag
+          image: username/fastapi-argocd-workshop:image-tag
           envFrom:
             - configMapRef:
                 name: app-envs

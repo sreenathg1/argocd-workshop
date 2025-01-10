@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: go-webapp-container
-          image: falrayes/go-argocd-workshop:image-tag
+          image: username/go-argocd-workshop:image-tag
           envFrom:
             - configMapRef:
                 name: app-envs

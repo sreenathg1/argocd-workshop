@@ -1,0 +1,29 @@
+name: Own fork
+
+on:
+  workflow_dispatch:
+
+env:
+  CI_COMMIT_MESSAGE: "[init-auto-commit] Own fork: Point repo references to my fork."
+  CI_COMMIT_AUTHOR: GitHub Workflows
+
+jobs:
+  own-fork:
+    name: Replace repo URLs
+    runs-on: ubuntu-latest
+    continue-on-error: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Change repo references
+        run: find . -type f -exec sed -i 's/FaisalAl-Rayes/${{ github.actor }}/g' {} +
+
+      - name: Git setup, add, commit, and push
+        run: |
+          git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+          git config --global user.email "${{ secrets.GIT_EMAIL }}"
+          git add .
+          git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
+          git push
