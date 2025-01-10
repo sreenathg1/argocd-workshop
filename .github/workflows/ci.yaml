@@ -20,9 +20,9 @@ env:
 jobs:
   build-fastapi:
     name: Build the fastapi webapp container image
-    if: |
-      !startsWith(github.event.head_commit.message, '[ci-auto-commit] ') &&
-      github.event.head_commit.author.username != 'GitHub Workflows'
+    # if: |
+    #   !startsWith(github.event.head_commit.message, '[ci-auto-commit] ') &&
+    #   github.event.head_commit.author.username != 'GitHub Workflows'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -48,6 +48,7 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64,linux/arm64/v8
           context: ./sources/fastapi-webapp
+          file: ./sources/fastapi-webapp/Containerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_FASTAPI_REPO }}:latest
@@ -59,9 +60,9 @@ jobs:
 
   build-go:
     name: Build the go webapp container image
-    if: |
-      !startsWith(github.event.head_commit.message, '[ci-auto-commit] ') &&
-      github.event.head_commit.author.username != 'GitHub Workflows'
+    # if: |
+    #   !startsWith(github.event.head_commit.message, '[ci-auto-commit] ') &&
+    #   github.event.head_commit.author.username != 'GitHub Workflows'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -87,6 +88,7 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64,linux/arm64/v8
           context: ./sources/go-webapp
+          file: ./sources/go-webapp/Containerfile
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_GO_REPO }}:latest
@@ -102,16 +104,11 @@ jobs:
     needs:
       - build-fastapi
       - build-go
-    if: |
-      !startsWith(github.event.head_commit.message, '[ci-auto-commit] ') &&
-      github.event.head_commit.author.username != 'GitHub Workflows'
     continue-on-error: false
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GIT_WORKFLOWS_TOKEN }}
 
       - name: Install kustomize
         run: |
