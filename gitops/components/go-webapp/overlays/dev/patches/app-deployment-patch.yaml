@@ -10,4 +10,4 @@ spec:
     spec:
       containers:
         - name: go-webapp-container
-          image: quay.io/falrayes/go-argocd-workshop:dev-0988b4733f6a07f20834bc853cdb42c974f65c35:dev-0988b4733f6a07f20834bc853cdb42c974f65c35
+          image: docker.io/falrayes/go-argocd-workshop:dev-b9f703d1ea87ec77d41b0c85dcdc14c2b080c28a
