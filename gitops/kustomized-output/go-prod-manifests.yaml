@@ -1,4 +1,4 @@
-# git commit: 4f04aee37632b634ec0cd9f7ef59fceceb32ed1d
+# git commit: 580bffcae4eaf21573ef48f13ad2b7cc9ed94f55
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -46,7 +46,7 @@ metadata:
   name: go-webapp-deployment
   namespace: prod-go
 spec:
-  replicas: 5
+  replicas: 2
   selector:
     matchLabels:
       app: go-webapp
@@ -59,7 +59,7 @@ spec:
       - envFrom:
         - configMapRef:
             name: app-envs-5ft77hhbt2
-        image: falrayes/go-argocd-workshop:prod-4f04aee37632b634ec0cd9f7ef59fceceb32ed1d
+        image: falrayes/go-argocd-workshop:prod-580bffcae4eaf21573ef48f13ad2b7cc9ed94f55
         livenessProbe:
           httpGet:
             path: /go/health
