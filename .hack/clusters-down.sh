@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -e
 
 # Teardown the clusters
 minikube delete -p argocd-cluster

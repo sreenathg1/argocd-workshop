@@ -35,7 +35,6 @@ You can connect with me through LinkedIn using the link the following link: [![L
         <li><a href="#app-of-appsets">App of AppSets</a></li>
       </ul>
     </li>
-    <li><a href="#contributing">Contributing</a></li>
     <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
@@ -73,121 +72,119 @@ Here are the sequential steps to get the workshop up and running!
 
 ### Prerequisites
 
-1. Have a <a href="https://github.com/">GitHub</a> account
+1. Needed accounts:
+    * Have a <a href="https://github.com/">GitHub</a> account
 
-2. Have a <a href="https://www.docker.com/">Docker</a> account
+    * Have an account in a container registry platform. The ones tested for this workshop are <a href="https://www.docker.io/">Docker</a> and <a href="https://www.quay.io/">Quay</a>
 
-3. Be familiar with the basics of <a href="https://kustomize.io/">kustomize</a>.
+2. Be familiar with:
+    * The basics of <a href="https://kustomize.io/">kustomize</a>.
 
-4. Ensure that you have docker installed on your machine. To install docker please follow the instructions of installation on the <a href="https://docker.com/">Docker Official Website</a>
-according to your operating system.
+3. Required tools:
+    * Kubectl CLI from your favorite package manager (brew, yum, apt, etc.)
 
-5. Ensure that docker is installed correctly by typing the following command in your shell and getting a response that looks like this
-  ```sh
-  ~$ docker --version
-  Docker version XX.XX.XX ...
-  ```
-  >At the time of initiating the workshop version 24.4.0 of Docker was used.
+    * ArgoCD CLI to try and get familiar with controlling the ArgoCD pipeline from the terminal. Use the instructions on the <a href="https://argo-cd.readthedocs.io/en/stable/cli_installation/">ArgoCD CLI Installation Page</a>. You can check if the installation was successful by running the following command in your shell and getting a response that looks like this
+        >At the time of initiating the workshop workshop version 2.13.3 of ArgoCD CLI was used.
 
-6. Ensure that you have minikube installed on your machine to simulate a Kubernetes cluster locally. To install minikube please follow the instructions of installation on the <a href="https://minikube.sigs.k8s.io/docs/start/">Minikube Official Installation Page</a> according to your operating system.
+    * Minikube from the <a href="https://minikube.sigs.k8s.io/docs/start/">Minikube Official Installation Page</a>
+        >At the time of initiating the workshop version 1.34.0 of Minikube was used.
 
-7. Ensure that minikube is installed correctly by typing the following command in your shell and getting a response that looks like this
-  ```sh
-  ~$ minikube version
-  minikube version: vX.XX.X
-  commit: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-  ```
-  >At the time of initiating the workshop version 1.34.0 of Minikube was used.
+    * <a href="https://minikube.sigs.k8s.io/docs/drivers/">An approperiate driver for your OS</a>. For this workshop we recommend <a href="https://docker.com/">Docker</a> for macOS and <a href="https://www.linux-kvm.org/">kvm2</a> for linux.
 
-8. Install ArgoCD CLI to try and get familiar with controlling the ArgoCD pipeline from the terminal. Use the instructions on the <a href="https://argo-cd.readthedocs.io/en/stable/cli_installation/">ArgoCD CLI Installation Page</a>. You can check if the installation was successful by running the following command in your shell and getting a response that looks like this
-  ```sh
-  ~$ argocd version
-    argocd: vX.X.X+XXXXXXX
-        BuildDate: XXXX-XX-XXXXX:XX:XXX
-        GitCommit: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-        GitTreeState: XXXXX
-        GoVersion: goX.XX.XX
-        Compiler: XX
-        Platform: XXXXXXX/XXXXX
-    argocd-server: vX.X.X+XXXXXXX.XXXXX
-  ```
-  >At the time of initiating the workshop workshop version 2.13.2 of ArgoCD CLI was used.
+        * Install docker from the <a href="https://docker.com/">Docker Official Website</a> or using your preferred package manager.
+            >At the time of initiating the workshop version 27.4.0 of Docker was used (`docker --version`).
 
-9. [Optional] Install <a href="https://www.oracle.com/es/virtualization/technologies/vm/downloads/virtualbox-downloads.html">VirtualBox</a> (if on amd64 arch) or <a href="https://www.parallels.com/">Parallels</a> (if on macOS arm64 arch)
-  >If you would like to do the more advanced multi-cluster ArgoCD deployments and the app of apps pattern then this is required.
+        * Install <a href="https://www.linux-kvm.org/">kvm2</a> from the <a href="https://docs.fedoraproject.org/en-US/quick-docs/virtualization-getting-started/">fedora project virtualization docs</a>.
+            >At the time of initiating the workshop version 10.1.0 of libvirtd was used (`libvirtd --version`).
 
 ### Setup
 
-1. Fork this repository to have your own copy which you could modify.
-This is important to be able to save your own repository secrets.
+Setup your own forked repository, registry, and spin up a cluster with argocd.
 
-2. Use your own image repositories
-    * Create two public image repositories in your Docker account named as follows:
+>For the sake of simplicity we will do the forbidden: Commit and push the changes to master/main >:)
+
+1. Github repository setup
+    * Fork this repository to have your own copy which you could modify. This is important to be able to save your own repository secrets.
+
+    * Enable read/write permissions for github workflows
+        * Go to the forked repository Settings > Actions > General > Workflow Permissions and enable `Read and write permissions`
+
+    * Make repo references point to your forked repo by using the `Own Fork` workflow
+        * Navigate from the repository tab to Actions > Own Fork
+        * Click on `Run workflow`, then again `Run workflow` (on the "master" branch)
+
+2. Registry setup
+    * Create your own public image repositories in your Quay/Docker registry named as follows:
         * fastapi-argocd-workshop
         * go-argocd-workshop
-    * Replace all "image: falrayes/..." with "image: <YOUR_DOCKER_USERNAME>/..."
 
-3. Use your own forked repository
-    * Replace all "repoURL: https://github.com/FaisalAl-Rayes/argocd-workshop.git" with "repoURL: https://github.com/<YOUR_GITHUB_USERNAME>/argocd-workshop.git" in the following paths:
-        * `gitops/app-of-apps.yaml`
-        * `gitops/app-of-appsets.yaml`
-        * `gitops/application.yaml`
-        * `gitops/applicationset.yaml`
-
-3. For the sake of simplicity you will do the forbidden: Commit and push the changes to master/main >:)
-
-4. Generate a GitHub access token (with repo and workflow scopes enabled) for the CI workflow to commit into your repo with updated images, then store it into the forked repository secrets as `GIT_WORKFLOWS_TOKEN`
-    * To generate a GitHub access token (classic) go to your profile settings > Developer Settings > Personal access tokens > Tokens (classic)
-
-5. Store your docker username into the forked repositories secrets as `DOCKER_USERNAME`
-
-6. Create a docker access token (with read and write scopes enabled) for the CI workflow to build and push to your docker repositories, then store it into the forked repository secrets as `DOCKER_TOKEN`
-    * To generate a docker personal access token go to your profile settings > Personal access tokens
-
-7. Run the CI workflow of the repo to create and push the first image tags
-    * Go to `https://github.com/FaisalAl-Rayes/argocd-workshop/actions/workflows/ci.yaml`
-    * Click on `Run workflow` and select the `master` branch
-
-8. Using Minikube with Docker as the driver, start a Kubernetes cluster with 3 worker nodes running Kubernetes version 1.27.3 by running the following command.
-   ```sh
-   ~$ minikube start --driver=docker -p argocd-workshop
-   ```
-   > This process might take some time if it is the first start up of minikube.
-
-9. Install ArgoCD in the Kubernetes cluster by running the following commands.
-   ```sh
-   ~$ kubectl create namespace argocd
-   ~$ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-   ```
-   >These commands are taken from <a href="https://argo-cd.readthedocs.io/en/stable/getting_started/">ArgoCD Installation Page</a>. Make sure that the official page takes priority over the commands in above.
+    * Create an access token in your registry account and store it into the forked repository secrets as `REGISTRY_ACCESS_TOKEN`.
+        * To create a repository github actions secret navigate to your forked repository Settings > Secrets and Variables > Actions > Secrets > New repository secret.
 
 
-10. Run one of the following commands to serve the ArgoCD service on your local machine in a different terminal instance. Whatever URL (127.0.0.1:port) you get from this we will call argoURL.
-    ```sh
-    # You can choose a port of your choosing that is not in use. I will use 8181
-    ~$ kubectl port-forward -n argocd svc/argocd-server 8181:443 --context argocd-cluster
-    or
-    # Minikube will assign the port
-    ~$ minikube -p argocd-cluster service argocd-server -n argocd
-    ```
+    * Change the values of `REGISTRY_URL`, `REGISTRY_USERNAME`, `REGISTRY_ACCESS_USER` in the `argocd-workshop/.github/workflows/ci.yaml` file. For example:
+        >Keep in mind that `REGISTRY_USERNAME` and `REGISTRY_ACCESS_USER` can be the same (in case of using docker forexample). while setting up a "robot" in quay will create a specific username for access to your image repos that will be different than your registry user.
+        ```yaml
+          # argocd-workshop/.github/workflows/ci.yaml
 
-11. Login to argocd-cli
+          # Quay example
+          REGISTRY_URL: quay.io
+          REGISTRY_USERNAME: falrayes
+          REGISTRY_ACCESS_USER: falrayes+argocd_workshop
 
-    * Get the initial admin password of ArgoCD to be able to access the ArgoCD service through the UI or CLI through the following command.
-
-        > You might need to wait for a bit for argocd to create the secret. 
-        > You could run `kubectl wait -n argocd --for=create secret/argocd-initial-admin-secret --timeout=300s --context argocd-cluster` and when it returns successfully you can proceed.
-
-        ```sh
-        ~$ argoPassword=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+          # Docker example
+          REGISTRY_URL: docker.io
+          REGISTRY_USERNAME: falrayes
+          REGISTRY_ACCESS_USER: falrayes
         ```
 
-    * You can now login using the argocd-cli and then using the same credentials login to the argocd-ui
+    * Build and push the first tags of the images to your registry using the `Deployment CI` workflow
+        * Navigate from the repository tab to Actions > Deployment CI
+        * Click on `Run workflow`, then again `Run workflow` (on the "master" branch)
+
+3. ArgoCD Environment setup
+
+    * Using Minikube with Docker/kvm2 as the driver and ingress addon enabled, start a Kubernetes cluster with 3 worker nodes running Kubernetes version 1.27.3 by running the following command.
+       ```sh
+       # linux
+       ~$ minikube start --driver=kvm2 --addons=ingress -p argocd-cluster
+       # or
+       # macOS
+       ~$ minikube start --driver=docker --addons=ingress -p argocd-cluster
+       ```
+       > This process might take some time if it is the first start up of minikube.
+
+    * Install ArgoCD in the Kubernetes cluster by running the following commands.
+       ```sh
+       ~$ kubectl create namespace argocd
+       ~$ kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+       ```
+       >These commands are taken from <a href="https://argo-cd.readthedocs.io/en/stable/getting_started/">ArgoCD Installation Page</a>. Make sure that the official page takes priority over the commands in above.
+
+
+    * Run one of the following commands to serve the ArgoCD service on your local machine in a different terminal instance.
+        > You could run `kubectl wait -n argocd pod --all --for=condition=ready --timeout=300s --context argocd-cluster`
+        > to make sure that all argocd pods are ready before port-forwarding.
         ```sh
-        # NOTE: If you let minikube service the argocd-server then use the port it has assigned.
-        # In the command bellow I am assuming that it is being ran on port 8181.
-        ~$ argocd login --insecure 127.0.0.1:8181 --username admin --password $argoPassword
+        # You can choose a port of your choosing that is not in use. I will use 8181
+        ~$ kubectl port-forward -n argocd svc/argocd-server 8181:443 --context argocd-cluster
         ```
+
+    * Login to argocd-cli
+
+        * Get the initial admin password of ArgoCD to be able to access the ArgoCD service through the UI or CLI through the following command.
+
+            > You might need to wait for a bit for argocd to create the secret. 
+            > You could run `kubectl wait -n argocd --for=create secret/argocd-initial-admin-secret --timeout=300s --context argocd-cluster` and when it returns successfully you can proceed.
+
+            ```sh
+            ~$ argoPassword=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
+            ```
+
+        * You can now login using the argocd-cli and then using the same credentials login to the argocd-ui
+            ```sh
+            ~$ argocd login --insecure 127.0.0.1:8181 --username admin --password $argoPassword
+            ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -264,19 +261,22 @@ spec:
 3. Click on the "Synchronize" button to deploy manually and watch the go webapp come to life, you should see something similar to:
     ![argo-app-healthy][argo-app-healthy]
 
-4. Use `minikube tunnel` in a separate terminal to serve the webapp.
-    ```sh
-    # Minikube will tunnel the ingress
-    ~$ minikube tunnel -p argocd-cluster
-    ```
-    > __NOTE__: This will ask for sudo permissions
+4. View the go webapp in the browser
+    * If using the `docker` driver then you need to tunnel the argocd-cluster to localhost using
+        ```sh
+        # Minikube will tunnel the ingress
+        ~$ minikube tunnel -p argocd-cluster
+        ```
+        > __NOTE__: This will ask for sudo permissions
 
-5. Open your Browser and go the link `localhost/go`.
-    ![go-webapp-dev][go-webapp-dev]
+    * Open your Browser and go to the link `http://CLUSTER_IP/go` where `CLUSTER_IP=$(minikube ip -p argocd-cluster)`, you should see the following respectively
+        > If using the `docker` driver then you should navigate to `http://localhost/go`
 
-6. Redo steps 1 -> 5 but with the automated syncing and deployment of argocd.
+        ![go-webapp-dev][go-webapp-dev]
+
+5. Redo steps 1 -> 4 but with the automated syncing and deployment of argocd.
     * Delete the argocd app
-    ```zsh
+    ```sh
     ~$ argocd app delete go-webapp-dev -y
     ```
     * Apply the `application.yaml` file again but with a different `syncPolicy`
@@ -290,9 +290,9 @@ spec:
         - CreateNamespace=true    # Letting argocd be responsible for creating the namespace(s) of the manifests reffered to in the /spec/source
      ```
 
-7. Delete the argocd application
+6. Delete the argocd application
     * You can use the UI intuitively or using the following command
-    ```zsh
+    ```sh
     ~$ argocd app delete go-webapp-dev -y
     ```
 
@@ -366,15 +366,17 @@ spec:
     ![post-appset-dashboard][post-appset-dashboard]
 
 
-2. Open your Browser and go the link `localhost/go` and then `localhost/fastapi`, you should see the following respectively
-    ![go-webapp-prod][go-webapp-prod]
-    ![fastapi-webapp-prod][fastapi-webapp-prod]
-    > __NOTE__: The `minikube tunnel -p argocd-cluster` should still be running for this to work
+2. View the go and fastapi webapps in the browser
+    * Open your Browser and go to the links `http://CLUSTER_IP/go` and `http://CLUSTER_IP/fastapi` where `CLUSTER_IP=$(minikube ip -p argocd-cluster)`, you should see the following respectively
+        > __NOTE__: If using the `docker` driver then you should navigate to `http://localhost/go` and `http://localhost/fastapi`. The `minikube tunnel -p argocd-cluster` should still be running for this to work
 
-3. Close the terminal holding the `minikube tunnel -p argocd-cluster` and the serving of the argocd-server in <a href="#setup">Setup</a> (Step 9)
+        ![go-webapp-prod][go-webapp-prod]
+        ![fastapi-webapp-prod][fastapi-webapp-prod]
+
+3. Close the terminal holding the `minikube tunnel -p argocd-cluster` (if using the `docker` driver) and the terminal serving of the argocd-server in <a href="#setup">Setup</a> (Step 9)
 
 4. Tear down the cluster
-    ```zsh
+    ```sh
     ~$ minikube stop -p argocd-cluster
     ~$ minikube delete -p argocd-cluster
     ```
@@ -390,7 +392,12 @@ The app of apps pattern is when a parent application (the “App of Apps”) is 
 I will be simulating multiple clusters to showcase how the app of apps pattern (using Applications and/or ApplicationSets) can be used for multi cluster deployments.
 
 1. Setup the clusters using the convenient well commented script in `.hack/clusters-up.sh` in a dedicated terminal instance. Please make sure to take a look at the shell script and read the comments.
-    ```zsh
+    ```sh
+    # If on Linux then this should be fine
+    ~$ ./.hack/clusters-up.sh
+
+    # If on macOS then sudo will be needed for appending an entry to /etc/hosts before spinning up the clusters
+    ~$ echo "$(ifconfig en0 | awk '/inet / {print $2}') argocd-workshop.com" | sudo tee -a /etc/hosts
     ~$ ./.hack/clusters-up.sh
     ```
 
@@ -400,77 +407,78 @@ I will be simulating multiple clusters to showcase how the app of apps pattern (
         ```sh
         ~$ argoPassword=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
         ```
+    >The `./.hack/clusters-up.sh` script logs you in to the argocd cli
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ### App of Apps
-In here we will see how deploying the one Application CR (the "App of Apps") will deploy the webapp in both the dev-cluster and prod-cluster using the Application CRs responsible for each webapp.  
-Files of concern (4 Application CRs `gitops/apps/*` + app of appsets Application CR `gitops/app-of-apps.yaml`)
+In here we will see how deploying the Application CR (the "App of Apps") will deploy both webapps in the dev-cluster/prod-cluster using the Application CRs responsible for each webapp.  
 
-1. Apply the `gitops/app-of-apps.yaml` file.
-    ```zsh
-    ~$ kubectl apply -f gitops/app-of-apps.yaml --context argocd-cluster
-    ```
-    The application `app-of-apps` should pop up almost immediately on the ArgoCD UI open in the browser alongside the other applications it spins up. Click on the `app-of-apps` application that popped up and you should see something similar to
-    ![in-argo-app-of-apps][in-argo-app-of-apps]
-
-2. [Precaution] Get the IP addresses of the `dev-cluster` and `prod-cluster` using minikube cli in case minikube did not automatically add entries to `/etc/hosts` with the profile names mapped to their IP.
-    ```zsh
-    ~$ minikube ip -p dev-cluster
-    ~$ minikube ip -p prod-cluster
+1. Apply the development and production overlays of `gitops/apps/app-of-apps`.
+    ```sh
+    ~$ kubectl apply -k gitops/apps/app-of-apps/overlays/dev --context argocd-cluster
+    ~$ kubectl apply -k gitops/apps/app-of-apps/overlays/prod --context argocd-cluster
     ```
 
-3. Open your Browser and go the link `http://dev-cluster/go` and then `http://dev-cluster/fastapi`, you should see the following respectively
-    ![go-webapp-dev][go-webapp-dev]
-    ![fastapi-webapp-dev][fastapi-webapp-dev]
+    * The application `dev-app-of-apps` and `prod-app-of-apps` should pop up almost immediately on the ArgoCD UI open in the browser alongside the other dev/prod applications it spins up. Click on the `dev-app-of-apps` application that popped up and you should see something similar to
+    ![in-argo-app-of-apps-dev][in-argo-app-of-apps-dev]
 
-4. Open your Browser and go the link `http://prod-cluster/go` and then `http://prod-cluster/fastapi`, you should see the following respectively
-    ![go-webapp-prod][go-webapp-prod]
-    ![fastapi-webapp-prod][fastapi-webapp-prod]
+2. View the dev-cluster webapps in the browser
+    * If using the `docker` driver then you need to tunnel the dev-cluster to localhost using
+        ```sh
+        ~$ minikube tunnel -p dev-cluster
+        ```
+    * Open your Browser and go the link `http://CLUSTER_IP/go` and `http://CLUSTER_IP/fastapi` where `CLUSTER_IP=$(minikube ip -p dev-cluster)`, you should see the following respectively
+        > If using the `docker` driver then you should navigate to `http://localhost/go` and `http://localhost/fastapi`
 
-5. Tear down the app-of-apps
-    ```zsh
-    ~$ argocd app delete app-of-apps -y
+        ![go-webapp-dev][go-webapp-dev]
+        ![fastapi-webapp-dev][fastapi-webapp-dev]
+
+
+3. View the prod-cluster webapps in the browser
+    * If using the `docker` driver then you need to tunnel the prod-cluster to localhost using
+        ```sh
+        ~$ minikube tunnel -p prod-cluster
+        ```
+    * Open your Browser and go the link `http://CLUSTER_IP/go` and `http://CLUSTER_IP/fastapi` where `CLUSTER_IP=$(minikube ip -p prod-cluster)`, you should see the following respectively
+        > If using the `docker` driver then you should navigate to `http://localhost/go` and `http://localhost/fastapi`
+
+        ![go-webapp-prod][go-webapp-prod]
+        ![fastapi-webapp-prod][fastapi-webapp-prod]
+
+4. Tear down the dev and prod app-of-apps
+    ```sh
+    ~$ argocd app delete dev-app-of-apps -y
+    ~$ argocd app delete prod-app-of-apps -y
     ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+
 ### App of AppSets
-In here we will see how deploying the one Application CR (the "App of Appsets") will deploy the webapps in both the dev-cluster and prod-cluster using the ApplicationSet CRs responsible for each webapp.
-Files of concern (2 ApplicationSet CRs `gitops/appsets/*` + app of appsets Application CR  `gitops/app-of-appsets.yaml`)
+In here we will see how deploying the Application CR (the "App of Appsets") will deploy both webapps in both the dev-cluster and prod-cluster using one ApplicationSet CR responsible for the webapps.
 
-1. Apply the `gitops/app-of-appsets.yaml` file.
+1. Apply the development and production overlays of `gitops/appsets/app-of-appsets`.
     ```sh
-    ~$ kubectl apply -f gitops/app-of-appsets.yaml --context argocd-cluster
+    ~$ kubectl apply -k gitops/appsets/app-of-appsets/overlays/dev --context argocd-cluster
+    ~$ kubectl apply -k gitops/appsets/app-of-appsets/overlays/prod --context argocd-cluster
     ```
-    The application should pop up almost immediately on the ArgoCD UI open in the browser. Click on the application that popped up and you should see something similar to
-    ![in-argo-app-of-appsets][in-argo-app-of-appsets]
+    The applications should pop up almost immediately on the ArgoCD UI open in the browser. Click on the applications named `dev-app-of-appsets` that popped up and you should see something similar to
+    ![in-argo-app-of-appsets-dev][in-argo-app-of-appsets-dev]
 
-3. Do the same steps in the <a href="#app-of-apps">app of apps section (steps 2,3,4)</a>
+2. Do the same steps in the <a href="#app-of-apps">app of apps section</a> (steps 2,3)
 
-2. Tear down the clusters using the convenient `.hack/clusters-down.sh`. Please make sure to take a look at the shell script.
-    ```zsh
+3. Tear down the clusters using the convenient `.hack/clusters-down.sh`. Please make sure to take a look at the shell script.
+    ```sh
+    # If on Linux then this should be fine
+    ~$ ./.hack/clusters-down.sh
+
+    # If on macOS then sudo will be needed for removing the entry in /etc/hosts related to argocd-workshop.com before tearing down the clusters
+    ~$ sudo sed -i '' '/argocd-workshop.com/d' /etc/hosts
     ~$ ./.hack/clusters-down.sh
     ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-<!-- CONTRIBUTING -->
-## Contributing
-
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
-
-1. Fork the Repository
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 
 <!-- LICENSE 
@@ -495,6 +503,7 @@ Connect with me on
 
 * [Best README Template](https://github.com/othneildrew/Best-README-Template/)
 * [Original News Demo Project](https://github.com/Freshman-tech/news-demo-starter-files)
+* [Multi Cluster Minikube ArgoCD](https://wave-s.notion.site/minikube-argocd-4126495087164d66a3aa8629fd6ec138)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -506,8 +515,9 @@ Connect with me on
 [linkedin-url]: https://linkedin.com/in/faisalalrayyess
 
 [in-argo-app]: readme-images/in-argo-app.png
-[in-argo-app-of-apps]: readme-images/in-argo-app-of-apps.png
-[in-argo-app-of-appsets]: readme-images/in-argo-app-of-appsets.png
+[in-argo-app-of-apps-dev]: readme-images/in-argo-app-of-apps-dev.png
+[in-argo-app-of-apps-prod]: readme-images/in-argo-app-of-apps-prod.png
+[in-argo-app-of-appsets-dev]: readme-images/in-argo-app-of-appsets-dev.png
 [argo-app-sync]: readme-images/argo-app-sync.png
 [argo-app-healthy]: readme-images/argo-app-healthy.png
 [go-webapp-dev]: readme-images/go-webapp-dev.png

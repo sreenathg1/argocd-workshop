@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: go-webapp-prod
+  name: app-of-apps
   namespace: argocd
 spec:
   project: default
@@ -9,15 +9,13 @@ spec:
   source:
     repoURL: https://github.com/FaisalAl-Rayes/argocd-workshop.git
     targetRevision: HEAD
-    path: gitops/components/go-webapp/overlays/prod
+    path: gitops/apps/overlays/dev
 
   destination:
-    name: prod-cluster
-    namespace: prod-go
+    server: https://kubernetes.default.svc
+    namespace: argocd
 
   syncPolicy:
     automated:
-      selfHeal: true
       prune: true
-    syncOptions:
-      - CreateNamespace=true
+      selfHeal: true

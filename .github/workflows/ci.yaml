@@ -130,6 +130,13 @@ jobs:
           sed -i 's|image:.*:.*|image: ${{ needs.build-go.outputs.dev-image }}|' gitops/components/go-webapp/overlays/dev/patches/app-deployment-patch.yaml
           sed -i 's|image:.*:.*|image: ${{ needs.build-go.outputs.prod-image }}|' gitops/components/go-webapp/overlays/prod/patches/app-deployment-patch.yaml
 
+      - name: Update the image env var with the built tag name
+        run: |
+          sed -i 's|^IMAGE=.*|IMAGE=${{ needs.build-fastapi.outputs.dev-image }}|' gitops/components/fastapi-webapp/overlays/dev/envs/app.env.example
+          sed -i 's|^IMAGE=.*|IMAGE=${{ needs.build-fastapi.outputs.prod-image }}|' gitops/components/fastapi-webapp/overlays/prod/envs/app.env.example
+          sed -i 's|^IMAGE=.*|IMAGE=${{ needs.build-go.outputs.dev-image }}|' gitops/components/go-webapp/overlays/dev/envs/app.env.example
+          sed -i 's|^IMAGE=.*|IMAGE=${{ needs.build-go.outputs.prod-image }}|' gitops/components/go-webapp/overlays/prod/envs/app.env.example
+
       - name: Generate and update manifests
         run: |
           kustomize build gitops/components/fastapi-webapp/overlays/dev > gitops/kustomized-output/fastapi-dev-manifests.yaml
@@ -153,5 +160,9 @@ jobs:
           git add gitops/components/fastapi-webapp/overlays/prod/patches/app-deployment-patch.yaml
           git add gitops/components/go-webapp/overlays/dev/patches/app-deployment-patch.yaml
           git add gitops/components/go-webapp/overlays/prod/patches/app-deployment-patch.yaml
+          git add gitops/components/fastapi-webapp/overlays/dev/envs/app.env.example
+          git add gitops/components/fastapi-webapp/overlays/prod/envs/app.env.example
+          git add gitops/components/go-webapp/overlays/dev/envs/app.env.example
+          git add gitops/components/go-webapp/overlays/prod/envs/app.env.example
           git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
           git push
