@@ -12,8 +12,8 @@ on:
 
 env:
   REGISTRY_URL: quay.io
-  REGISTRY_USERNAME: falrayes
-  REGISTRY_ACCESS_USER: falrayes+argocd_workshop
+  REGISTRY_USERNAME: sgirijan0
+  REGISTRY_ACCESS_USER: sgirijan0+argocd_workshop
   FASTAPI_IMAGE_REPO: fastapi-argocd-workshop
   GO_IMAGE_REPO: go-argocd-workshop
   CI_COMMIT_MESSAGE: "[ci-auto-commit] Continuous Integration: Manifests generated and updated."
